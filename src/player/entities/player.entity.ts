@@ -1,16 +1,38 @@
+import { Card } from 'src/card/entities/card.entity';
+import { CommonEntity } from 'src/commons/models/base.entity';
 import { Game } from 'src/game/entities/game.entity';
+import { Team } from 'src/team/entities/team.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  OneToMany,
 } from 'typeorm';
+
 @Entity()
-export class Player {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Player extends CommonEntity {
+  @Column({ default: false })
+  isReady: boolean;
+
+  @Column({ default: false })
+  isTurn: boolean;
+
+  @Column({ default: 0 })
+  score: number;
+
+  @Column({ default: false })
+  isWinner: boolean;
+
+  @Column({ nullable: true })
+  position: number; // Position at the virtual table
+
+  @Column({ default: false })
+  isSpectator: boolean;
+
+  @CreateDateColumn()
+  joinedAt: Date;
 
   @ManyToOne(() => User, (user) => user.id)
   user: User;
@@ -18,18 +40,9 @@ export class Player {
   @ManyToOne(() => Game, (game) => game.players)
   game: Game;
 
-  @Column({ default: false })
-  isReady: boolean; // Has the player confirmed they're ready?
+  @ManyToOne(() => Team, (team) => team.players, { nullable: true })
+  team: Team;
 
-  @Column({ default: false })
-  isTurn: boolean; // Is it this player's turn?
-
-  @Column({ default: 0 })
-  score: number; // Game score
-
-  @Column({ default: false })
-  isWinner: boolean; // Did this player win?
-
-  @CreateDateColumn()
-  joinedAt: Date;
+  @OneToMany(() => Card, (card) => card.player)
+  cards: Card[];
 }

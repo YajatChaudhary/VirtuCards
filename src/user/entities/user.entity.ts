@@ -1,17 +1,10 @@
+import { CommonEntity } from 'src/commons/models/base.entity';
 import { Game } from 'src/game/entities/game.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { UserRole } from 'src/user-roles/entities/user-role.entity';
+import { Column, CreateDateColumn, Entity, OneToMany } from 'typeorm';
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class User extends CommonEntity {
   @Column({ unique: true })
   username: string;
 
@@ -21,12 +14,9 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ default: 'player' }) // 'admin' | 'player'
-  role: string;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @OneToMany(() => Game, (game) => game.creator)
+  @OneToMany(() => Game, (game) => game.user)
   games: Game[];
+
+  @OneToMany(() => UserRole, (userRole) => userRole.user)
+  userRoles: UserRole[];
 }

@@ -6,7 +6,7 @@ export class LoginAuthDto {
   @ApiProperty()
   @IsNotEmpty({ message: CommonMethods.getErrorMsgCombinedString('AUTH_1001') })
   @IsString()
-  phone: string;
+  email: string;
 
   @ApiProperty({
     description: 'Password of the user',

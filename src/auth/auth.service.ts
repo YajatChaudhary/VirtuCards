@@ -47,7 +47,7 @@ export class AuthService {
     console.log('cliID', clientId);
     const authClient = await this.authClientRepo.findOne(clientId);
     const user = await this.userRepo.findOneByQuery({
-      phone: createAuthDto.phone,
+      email: createAuthDto.email,
       is_active: true,
       is_deleted: false,
     });
