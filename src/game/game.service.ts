@@ -25,15 +25,11 @@ export class GameService {
     });
 
     const savedGame = await this.gameRepository.save(game);
-
-    // Create decks for the game
     await this.cardService.createDecksForGame(savedGame);
-
     return savedGame;
   }
 
   private generateInviteCode(): string {
-    // Generate a 6-character alphanumeric code
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 
@@ -73,11 +69,7 @@ export class GameService {
     if (game.players.length < 2) {
       throw new Error('Cannot start game with fewer than 2 players');
     }
-
-    // Set the game to active
     game.status = 'active';
-
-    // Set a random player to take the first turn
     const randomIndex = Math.floor(Math.random() * game.players.length);
     game.currentTurnPlayerId = game.players[randomIndex].id;
 
@@ -98,23 +90,15 @@ export class GameService {
 
   async nextTurn(id: string): Promise<Game> {
     const game = await this.findOne(id);
-
-    // Find the index of the current player
     const currentPlayerIndex = game.players.findIndex(
       (player) => player.id === game.currentTurnPlayerId,
     );
-
-    // Calculate the next player index (cycle through players)
     const nextPlayerIndex = (currentPlayerIndex + 1) % game.players.length;
-
-    // Set the next player's turn
     game.currentTurnPlayerId = game.players[nextPlayerIndex].id;
-
     return this.gameRepository.save(game);
   }
 
   async createGameRoom(): Promise<string> {
-    // Generate a unique room ID for WebRTC
     return uuidv4();
   }
 }

@@ -2,8 +2,8 @@ import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CardService } from './card.service';
 
-@ApiTags('cards')
-@Controller('cards')
+@ApiTags('Cards')
+@Controller('Cards')
 export class CardController {
   constructor(private readonly cardService: CardService) {}
 
