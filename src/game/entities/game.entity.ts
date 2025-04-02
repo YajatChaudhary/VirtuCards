@@ -1,41 +1,64 @@
+import { Card } from 'src/card/entities/card.entity';
+import { CommonEntity } from 'src/commons/models/base.entity';
+import { GameTemplate } from 'src/game-template/entities/game-template.entity';
 import { Player } from 'src/player/entities/player.entity';
+import { Round } from 'src/round/entities/round.entity';
 import { RuleSet } from 'src/ruleset/entities/ruleset.entity';
+import { Team } from 'src/team/entities/team.entity';
 import { User } from 'src/user/entities/user.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()
-export class Game {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Game extends CommonEntity {
   @Column()
   name: string;
 
   @Column({ default: false })
-  isPrivate: boolean; // True if game is invite-only
+  isPrivate: boolean;
 
   @Column({ nullable: true })
-  inviteCode: string; // Code for private games
+  inviteCode: string;
 
   @Column({ default: 1 })
-  deckCount: number; // Number of decks
+  deckCount: number;
 
   @Column({
     type: 'enum',
-    enum: ['active', 'finished', 'cancelled'],
-    default: 'active',
+    enum: ['active', 'finished', 'cancelled', 'waiting'],
+    default: 'waiting',
   })
-  status: string; // Game status
+  status: string;
 
-  @ManyToOne(() => User, (user) => user.games)
-  creator: User; // Who created the game
+  @Column({
+    type: 'enum',
+    enum: ['TeenPatti', 'Sweep', 'Poker', 'Bhabhi', 'Bluff', 'Kabbo', 'Custom'],
+    default: 'TeenPatti',
+  })
+  gameType: string;
+
+  @Column({ nullable: true })
+  currentTurnPlayerId: string;
+
+  @Column({ nullable: true })
+  webRtcRoomId: string;
+
+  @Column({ default: false })
+  isTeamGame: boolean;
+
+  @Column({ default: 2 })
+  minPlayers: number;
+
+  @Column({ default: 8 })
+  maxPlayers: number;
+
+  @Column({ nullable: true })
+  currentRoundId: string;
+
+  @ManyToOne(() => User, (user) => user.games, { onDelete: 'CASCADE' })
+  user: User;
+
+  @ManyToOne(() => GameTemplate, { nullable: true })
+  template: GameTemplate;
 
   @OneToMany(() => Player, (player) => player.game)
   players: Player[];
@@ -43,6 +66,12 @@ export class Game {
   @OneToMany(() => RuleSet, (ruleSet) => ruleSet.game)
   rules: RuleSet[];
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @OneToMany(() => Card, (card) => card.game)
+  cards: Card[];
+
+  @OneToMany(() => Team, (team) => team.game)
+  teams: Team[];
+
+  @OneToMany(() => Round, (round) => round.game)
+  rounds: Round[];
 }
